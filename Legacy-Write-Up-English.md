@@ -1,8 +1,7 @@
 # Legacy Write-Up (English Version)
 This is my write-up about **Legacy** which is an active Windows machine on **Hack The Box** having the IP Address `10.10.10.4`.
 
-![[img/legacy-card.png]]
-
+![legacy-card](img/legacy-card.png)
 ## Target Enumeration
 
 ### Nmap Initial Scan
@@ -16,8 +15,7 @@ Note : SYN scan require you to perform the command as `root`
  sudo nmap -sSVC -p- 10.10.10.4 -oA nmap/nmap_initial_scan.log
 ```
 
-![[img/nmap-scan.png]]
-
+![nmap-scan](img/nmap-scan.png)
 <br>
 
 ### Nmap Vuln Scan
@@ -29,7 +27,7 @@ After the scan result, we can see that we only have ports open on some SMB servi
 sudo nmap -script vuln -p- 10.10.10.4 -oA nmap/nmap_vuln_scan.log
 ```
 
-![[img/nmap-vuln.png]]
+![nmap-vuln](img/nmap-vuln.png)
 
 We can see that the SMB ports seems to be vulnerable to `ms17-010`, which is good to know so let keep this in mind.
 
@@ -89,8 +87,7 @@ We got two shares that we can possibly log in to with `anonymous` account, so le
 
 That was good to check, but unfortunately I can't seem to be able to login, the connection closed right after it succeed logging is as `anonymous`
 
-![[img/smb-anonymous.png]]
-
+![smb-anonymous](img/smb-anonymous.png)
 <br>
 
 ## Metasploit 
@@ -104,7 +101,7 @@ So since we can't access the share manually, let's check for `ms17-010` in `msfc
 msfconsole
 ```
 
-![[img/msfconsole.png]]
+![msfconsole](img/msfconsole.png)
 
 Here we want to search for `ms17-010` vulnerability, so we only need to ask our good friend `Metasploit`.
 
@@ -112,7 +109,7 @@ Here we want to search for `ms17-010` vulnerability, so we only need to ask our 
 msf6 > search ms17-010
 ```
 
-![[img/search-exploit.png]]
+![search-exploit](img/search-exploit.png)
 
 And we can see four results coming up, for this case I will take the second one, since it is not EternalBlue which often fails. We can choose the exploit by typing this in `msfconsole` prompt: 
 
@@ -136,7 +133,7 @@ msf6 exploit(windows/smb/ms17_010_psexec) > exploit
 
 And we got ourselves a sweet `meterpreter` shell. We can type `getuid` to know which user we are. As we can see here, we are already `NT AUTHORITY/SYSTEM`.
 
-![[img/meterpreter.png]]
+![meterpreter](img/meterpreter.png)
 
 <br>
 
@@ -150,6 +147,6 @@ To do that just go to the root of `C:\` and type the following command :
 dir /s/b [YOUR_FILE]
 ```
 
-![[img/proof.png]]
+![proof](img/proof.png)
 
 Only need to gather the flag within the files, and we are now done with this box that we have just owned.
